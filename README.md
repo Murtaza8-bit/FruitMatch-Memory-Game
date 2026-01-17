@@ -5,39 +5,21 @@ A responsive and interactive memory card game built using HTML, CSS, and JavaScr
 ---
 
 ## 🚀 Features
-- Modern and clean user interface  
-- Food categories (Pizza, Burgers, Sandwiches)  
-- Featured food items with descriptions and prices  
-- Add-to-cart functionality  
-- Responsive design  
+- Juicy User Interface: Vibrant colors, gradient backgrounds, and floating bubble animations
+- 3 Difficulty Modes: Easy (4x3), Medium (4x4), and Hard (5x4)
+- Synthesized Audio: Custom sound effects (Flip, Match, Win)
+- Local Leaderboard: Saves high scores permanently using LocalStorage 
+- Responsive Design: Works smoothly on desktops and mobile devices  
 
 ---
 
 ## 🛠️ Technologies Used
 - **HTML** – Website structure  
 - **CSS** – Styling and layout  
-- **JavaScript** – Interactivity and cart logic  
+- **JavaScript** – Interactivity and logic  
 
 ---
 
-## 📁 Project Structure
-
----
-
-## 🎯 Project Purpose
-This project was developed to:
-- Practice frontend web development
-- Improve UI/UX skills
-- Learn DOM manipulation using JavaScript
-- Build a strong portfolio project
-
----
-
-## 👤 Author
-**Name:** Tariq Mehmood  
-**CMS ID:** 023-23-0127  
-
----
-
-## 📌 Note
-This is a frontend-only project. No backend or database is included.
+## 👤 Developer
+**Name:** Ghulam Murtaza
+**CMS ID:** 023-23-0079
