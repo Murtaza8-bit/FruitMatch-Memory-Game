@@ -14,9 +14,9 @@ A responsive and interactive memory card game built using HTML, CSS, and JavaScr
 ---
 
 ## 🛠️ Technologies Used
-- **HTML** – Website structure  
-- **CSS** – Styling and layout  
-- **JavaScript** – Interactivity and logic  
+- **HTML** – Structural backbone  
+- **CSS** – Visual presentation 
+- **JavaScript** – Dynamic behavior  
 
 ---
 
