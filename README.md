@@ -21,5 +21,5 @@ A responsive and interactive memory card game built using HTML, CSS, and JavaScr
 ---
 
 ## 👤 Developer
-**Name:** Ghulam Murtaza
-**CMS ID:** 023-23-0079
+* **Name:** Ghulam Murtaza
+* **CMS ID:** 023-23-0079
