@@ -1,5 +1,4 @@
-/* --- CSS VARIABLES --- */
-:root {
+:root{
     --primary: #FF7675;    
     --secondary: #FAB1A0;  
     --dark: #2D3436;
@@ -7,10 +6,9 @@
     --accent: #fdcb6e;
 }
 
-/* --- BASIC SETUP --- */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-body {
+body{
     background-color: #ffb7b2;
     color: var(--dark);
     height: 100vh;
@@ -20,8 +18,7 @@ body {
     justify-content: center;
 }
 
-/* --- HEADER --- */
-.game-header {
+.game-header{
     position: absolute;
     top: 20px;
     width: 100%;
@@ -31,7 +28,7 @@ body {
     align-items: center;
 }
 
-.stats-bar {
+.stats-bar{
     display: flex;
     gap: 20px;
     background: var(--white);
@@ -40,17 +37,14 @@ body {
     border: 2px solid var(--secondary);
 }
 
-/* --- GAME GRID --- */
-.game-board {
+.game-board{
     display: grid;
-    /* grid-template-columns is set by JS now */
     gap: 12px;
     margin-top: 60px;
     max-width: 90vw;
 }
 
-/* --- CARDS --- */
-.card {
+.card{
     width: 80px;
     height: 80px;
     position: relative;
@@ -59,7 +53,7 @@ body {
     perspective: 1000px;
 }
 
-.card-inner {
+.card-inner{
     position: relative;
     width: 100%;
     height: 100%;
@@ -68,10 +62,10 @@ body {
     transform-style: preserve-3d;
 }
 
-.card.flip .card-inner { transform: rotateY(180deg); }
-.card.matched { visibility: hidden; }
+.card.flip .card-inner{transform: rotateY(180deg);}
+.card.matched{visibility: hidden;}
 
-.card-face {
+.card-face{
     position: absolute;
     width: 100%;
     height: 100%;
@@ -83,12 +77,10 @@ body {
     border-radius: 10px;
     border: 2px solid var(--dark);
 }
+.card-front{background-color: var(--primary); color: white;}
+.card-back{background-color: white; transform: rotateY(180deg);}
 
-.card-front { background-color: var(--primary); color: white; }
-.card-back { background-color: white; transform: rotateY(180deg); }
-
-/* --- OVERLAYS & MODALS --- */
-.overlay {
+.overlay{
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5);
     display: flex;
@@ -96,8 +88,7 @@ body {
     justify-content: center;
     z-index: 100;
 }
-
-.modal-card {
+.modal-card{
     background: white;
     padding: 40px;
     border-radius: 20px;
@@ -107,10 +98,9 @@ body {
     max-width: 90%;
 }
 
-.hidden { display: none !important; }
+.hidden{display: none !important;}
 
-/* --- BUTTONS --- */
-.btn {
+.btn{
     padding: 12px 20px;
     background-color: var(--primary);
     color: white;
@@ -127,8 +117,7 @@ body {
 .btn-med { background-color: #0984e3; color: white; }
 .btn-hard { background-color: #d63031; color: white; }
 
-/* New Button Style for Play Again */
-.btn-play-again {
+.btn-play-again{
     background-color: #d63031; 
     width: 100%; 
     padding: 15px; 
@@ -138,7 +127,7 @@ body {
     margin-top: 20px;
 }
 
-.controls-area {
+.controls-area{
     position: fixed; 
     bottom: 30px; 
     display: flex; 
