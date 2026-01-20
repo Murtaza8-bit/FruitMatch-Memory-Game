@@ -4,65 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FruitMatch - Juicy Memory Game</title>
-    
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="juicy_styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="bg-circle" style="width: 200px; height: 200px; top: 10%; left: 5%;"></div>
-    <div class="bg-circle" style="width: 300px; height: 300px; bottom: 10%; right: 5%; animation-delay: -5s;"></div>
-    <canvas id="confetti-canvas"></canvas>
+    <audio id="sound-flip" src="flip.mp3"></audio>
+    <audio id="sound-win" src="win.wav"></audio>
+
     <div class="overlay" id="start-screen">
         <div class="modal-card">
-            <span class="material-icons-round" style="font-size: 70px; color: #FF7675; margin-bottom: 15px;">local_florist</span>
-            <h1 class="modal-title">Fruit Match</h1>
-            <p style="color:#636e72; margin-bottom: 30px;">Test your memory and match all the pairs! 🧠</p>
+            <span class="material-icons-round" style="font-size: 50px; color: var(--primary);">eco</span>
+            <h1>Fruit Match</h1>
+            <p style="margin-bottom: 20px; color: #666;">Select Difficulty:</p>
             
-            <div class="difficulty-grid">
-                <button class="btn btn-secondary" onclick="game.startGame(4, 3)">Easy</button>
-                <button class="btn btn-primary" onclick="game.startGame(4, 4)">Medium</button>
-                <button class="btn btn-accent" onclick="game.startGame(5, 4)">Hard</button>
+            <button class="btn btn-easy" onclick="game.startGame(4, 3)">Easy</button>
+            <button class="btn btn-med" onclick="game.startGame(4, 4)">Medium</button>
+            <button class="btn btn-hard" onclick="game.startGame(5, 4)">Hard</button>
+            
+            <div style="margin-top: 25px; text-align: left;">
+                <h4 style="border-bottom: 2px solid var(--secondary);">🏆 Recent Winners</h4>
+                <ul id="leaderboard-list" style="list-style: none; padding-top: 10px;"></ul>
             </div>
-
-     <div class="leaderboard-box">
-        <h4 style="color:#d63031; margin-bottom:10px;">🏆 Top Pickers</h4>
-        <ul class="score-list" id="leaderboard-list">
-        <li>No games played yet...</li>
-        </ul>
-    </div>
-    </div> 
+        </div>
     </div>
 
-    <div class="overlay hidden" id="game-over-screen">
-    <div class="modal-card">
-    <span class="material-icons-round" style="font-size: 70px; color: var(--success); margin-bottom: 10px;">emoji_events</span>
-    <h1 class="modal-title">Tasty!</h1>
-        <p style="color:#636e72; margin-bottom:20px;" id="final-stats-text">Level Complete</p>
-          <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="location.reload()">
-                <span class="material-icons-round">replay</span> Play Again </button>
-    </div>
+    <div class="overlay hidden" id="game-over-modal">
+        <div class="modal-card">
+            <span class="material-icons-round" style="font-size: 80px; color: #55E6C1; margin-bottom: 10px;">emoji_events</span>
+            
+            <h1 style="color: #d63031; font-size: 3rem; margin: 0; font-weight: 800;">Tasty!</h1>
+            
+            <p style="color: #636e72; font-size: 1.2rem; margin-top: 10px;">
+                Finished in <b id="final-moves" style="color: #2D3436;">0</b> moves
+            </p>
+            <p style="color: #b2bec3; font-size: 1rem;">
+                Time: <span id="final-time">00:00</span>
+            </p>
+            
+            <button class="btn btn-play-again" onclick="location.reload()">
+                <span class="material-icons-round" style="vertical-align: middle; margin-right: 5px;">replay</span> PLAY AGAIN
+            </button>
+        </div>
     </div>
 
     <header class="game-header">
-    <div class="logo">
-    <span class="material-icons-round" style="font-size: 32px; color: #d63031;">eco</span>
-    <span>FruitMatch</span>
-    </div>
-    <div class="stats-bar">
-    <div class="stat-item"><span class="material-icons-round">timer</span> <span id="timer">00:00</span></div>
-    <div class="stat-item"><span class="material-icons-round">touch_app</span> <span id="moves">0</span> Moves</div>
-    </div>
+        <h2>FruitMatch</h2>
+        <div class="stats-bar">
+            <span>Moves: <b id="moves">0</b></span>
+            <span style="margin-left:15px">Time: <b id="timer">00:00</b></span>
+        </div>
     </header>
 
     <div class="game-board" id="board"></div>
+
     <div class="controls-area">
-    <button class="btn btn-secondary" onclick="location.reload()"><span class="material-icons-round">arrow_back</span> Menu</button>
-    <button class="btn btn-accent" onclick="game.restartLevel()"><span class="material-icons-round">refresh</span> Restart</button>
+        <button class="btn" onclick="location.reload()">Menu</button>
+        <button class="btn" onclick="game.restartLevel()">Restart</button>
     </div>
 
-    <script src="game_engine.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
