@@ -5,9 +5,9 @@ A responsive and interactive memory card game built using HTML, CSS, and JavaScr
 ---
 
 ## 🚀 Features
-- Juicy User Interface: Vibrant colors, gradient backgrounds, and floating bubble animations
+- Juicy User Interface: Vibrant colors, gradient backgrounds
 - 3 Difficulty Modes: Easy (4x3), Medium (4x4), and Hard (5x4)
-- Synthesized Audio: Custom sound effects (Flip, Match, Win)
+- Sound Effects: Custom audio for flipping cards and winning the game
 - Local Leaderboard: Saves high scores permanently using LocalStorage 
 - Responsive Design: Works smoothly on desktops and mobile devices  
 
