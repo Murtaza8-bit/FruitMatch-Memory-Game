@@ -1,152 +1,110 @@
-class SoundManager{
-    constructor(){
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.enabled = true;
-    }
-
-    playTone(freq, type, duration){
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);}
-
-    flip(){ this.playTone(400, 'sine', 0.1); }
-    match(){ 
-        this.playTone(600, 'sine', 0.1); 
-        setTimeout(() => this.playTone(800, 'sine', 0.2), 100);
-    }
-    win(){
-        [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => this.playTone(f, 'triangle', 0.3), i*150));
-}
-}
-
-class ConfettiSystem{
-    constructor(){
-        this.canvas = document.getElementById('confetti-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.particles = [];
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
-    }
-    resize(){this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight;}
-    
-    fire(){
-        for(let i=0; i<100; i++){
-            this.particles.push({
-                x: this.canvas.width/2, y: this.canvas.height/2,
-                vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10 - 5,
-                color: `hsl(${Math.random()*360}, 100%, 50%)`, size: Math.random()*8 + 2
-            });
-    }
-        this.animate();
-    }
-
-    animate(){
-        if(this.particles.length === 0) return;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.particles.forEach((p, i) => {
-            p.x += p.vx; p.y += p.vy; p.vy += 0.2; // Gravity
-            this.ctx.fillStyle = p.color;
-            this.ctx.fillRect(p.x, p.y, p.size, p.size);
-            if(p.y > this.canvas.height) this.particles.splice(i, 1);
-        });
-        requestAnimationFrame(() => this.animate());}}
-
-class FruitGame{
-    constructor(){
+class FruitGame {
+    constructor() {
+        // Extended emoji list for Hard mode (needs 10 pairs)
         this.emojis = ["🍎","🍌","🍇","🍊","🍓","🍉","🍍","🥝","🍒","🍑","🥭","🍋"];
-        this.sound = new SoundManager();
-        this.confetti = new ConfettiSystem();
-        
         this.boardElement = document.getElementById('board');
-        this.timerElement = document.getElementById('timer');
         this.movesElement = document.getElementById('moves');
+        this.timerElement = document.getElementById('timer');
         
+        // Game State
         this.currentRows = 4;
         this.currentCols = 4;
-        this.cards = [];
         this.hasFlippedCard = false;
         this.lockBoard = false;
         this.firstCard = null;
         this.secondCard = null;
         this.moves = 0;
-        this.matchesFound = 0;
+        this.matches = 0;
         this.totalPairs = 0;
         this.timerInterval = null;
-        this.seconds = 0;
-
+        
         this.loadLeaderboard();
-        
-        document.body.addEventListener('click', () => {
-            if(this.sound.ctx.state === 'suspended') this.sound.ctx.resume();
-        }, {once:true});}
-    startGame(rows, cols){
-        this.currentRows = rows; this.currentCols = cols;
+    }
+
+    startGame(rows, cols) {
+        this.currentRows = rows;
+        this.currentCols = cols;
         document.getElementById('start-screen').classList.add('hidden');
-        this.resetState();
         
-        const totalCards = rows * cols;
-        this.totalPairs = totalCards / 2;
+        // Update Grid CSS dynamically
         this.boardElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         
-        const gameEmojis = this.emojis.slice(0, this.totalPairs);
-        const deck = [...gameEmojis, ...gameEmojis];
-        this.shuffle(deck);
+        this.restartLevel();
+    }
 
-        this.boardElement.innerHTML = '';
+    restartLevel() {
+        // Reset State
+        this.moves = 0;
+        this.matches = 0;
+        this.movesElement.innerText = "0";
+        this.hasFlippedCard = false;
+        this.lockBoard = false;
+        this.firstCard = null;
+        this.secondCard = null;
+        clearInterval(this.timerInterval);
+        this.timerElement.innerText = "00:00";
+
+        this.setupBoard();
+        this.startTimer();
+    }
+
+    setupBoard() {
+        const totalCards = this.currentRows * this.currentCols;
+        this.totalPairs = totalCards / 2;
+        
+        // Slice the emoji array to get exactly enough pairs for the level
+        const gameEmojis = this.emojis.slice(0, this.totalPairs);
+        const deck = [...gameEmojis, ...gameEmojis]; // Duplicate
+        this.shuffle(deck);
+        
+        this.boardElement.innerHTML = ''; // Clear board
+        
         deck.forEach(emoji => {
-            const card = this.createCard(emoji);
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.emoji = emoji;
+
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-face card-front">?</div>
+                    <div class="card-face card-back">${emoji}</div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => this.flipCard(card));
             this.boardElement.appendChild(card);
         });
-        this.startTimer();
-        console.log("Game Started: Grid " + rows + "x" + cols);
     }
 
-    restartLevel(){ this.startGame(this.currentRows, this.currentCols); }
-
-    createCard(emoji){
-        const card = document.createElement('div');
-        card.classList.add('card');
-        card.dataset.emoji = emoji;
-        card.innerHTML = `
-            <div class="card-face card-front">${emoji}</div>
-            <div class="card-face card-back"><span class="material-icons-round">eco</span></div>
-        `;
-        card.addEventListener('click', () => this.flipCard(card));
-        return card;
-    }
-
-    flipCard(card){
+    flipCard(card) {
         if (this.lockBoard) return;
         if (card === this.firstCard) return;
 
-        this.sound.flip();
+        const audio = document.getElementById('sound-flip');
+        if(audio) { audio.currentTime = 0; audio.play(); }
+
         card.classList.add('flip');
 
-        if (!this.hasFlippedCard){
+        if (!this.hasFlippedCard) {
             this.hasFlippedCard = true;
             this.firstCard = card;
-            return;}
+            this.firstCard = card;
+            return;
+        }
+
         this.secondCard = card;
         this.moves++;
         this.movesElement.innerText = this.moves;
-        this.checkForMatch();}
-    
-checkForMatch(){
+        this.checkForMatch();
+    }
+
+    checkForMatch() {
         let isMatch = this.firstCard.dataset.emoji === this.secondCard.dataset.emoji;
-        isMatch ? this.processMatch() : this.unflipCards();}
+        isMatch ? this.disableCards() : this.unflipCards();
+    }
 
-processMatch(){
-        this.matchesFound++;
-        this.sound.match();
-
+    disableCards() {
+        this.matches++;
         this.firstCard.removeEventListener('click', () => {}); 
         this.secondCard.removeEventListener('click', () => {});
 
@@ -154,8 +112,11 @@ processMatch(){
             this.firstCard.classList.add('matched');
             this.secondCard.classList.add('matched');
             this.resetBoard();
-            if (this.matchesFound === this.totalPairs) this.endGame();
-        }, 400);
+            
+            if(this.matches === this.totalPairs) {
+                this.winGame();
+            }
+        }, 500);
     }
 
     unflipCards() {
@@ -164,7 +125,8 @@ processMatch(){
             this.firstCard.classList.remove('flip');
             this.secondCard.classList.remove('flip');
             this.resetBoard();
-        }, 1000);}
+        }, 1000);
+    }
 
     resetBoard() {
         [this.hasFlippedCard, this.lockBoard] = [false, false];
@@ -175,54 +137,70 @@ processMatch(){
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
-    }
+        }
     }
 
-    startTimer(){
-        clearInterval(this.timerInterval);
-        this.seconds = 0;
-        this.timerElement.innerText = "00:00";
+    startTimer() {
+        let seconds = 0;
         this.timerInterval = setInterval(() => {
-            this.seconds++;
-            const m = Math.floor(this.seconds / 60).toString().padStart(2, '0');
-            const s = (this.seconds % 60).toString().padStart(2, '0');
+            seconds++;
+            let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            let s = (seconds % 60).toString().padStart(2, '0');
             this.timerElement.innerText = `${m}:${s}`;
-        }, 1000);}
-    resetState(){
-        this.moves = 0; this.matchesFound = 0;
-        this.movesElement.innerText = '0';
-        this.hasFlippedCard = false; this.lockBoard = false;
-        this.firstCard = null; this.secondCard = null;
-        clearInterval(this.timerInterval);
-}
+        }, 1000);
+    }
 
-    endGame(){
+    winGame() {
+        // STOP TIMER
         clearInterval(this.timerInterval);
-        this.saveScore(this.moves);
-        this.sound.win();
-        this.confetti.fire(); 
+        const audio = document.getElementById('sound-win');
+        if(audio) audio.play();
+
+        // DETERMINE DIFFICULTY
+        let diffName = "Medium";
+        if(this.currentCols === 3) diffName = "Easy";
+        if(this.currentRows === 5) diffName = "Hard";
+
+        // SAVE SCORE
+        this.saveScore(diffName);
+
+        // UPDATE MODAL STATS
+        document.getElementById('final-moves').innerText = this.moves;
+        document.getElementById('final-time').innerText = this.timerElement.innerText;
+
+        // SHOW MODAL
+        document.getElementById('game-over-modal').classList.remove('hidden');
+    }
+
+    saveScore(difficulty) {
+        const newScore = { 
+            diff: difficulty, 
+            moves: this.moves, 
+            date: new Date().toLocaleDateString() 
+        };
         
-        document.getElementById('final-stats-text').innerHTML = 
-            `Finished in <b>${this.moves} moves</b><br>Time: ${this.timerElement.innerText}`;
-        document.getElementById('game-over-screen').classList.remove('hidden');
-}
-    saveScore(newScore){
-        let scores = JSON.parse(localStorage.getItem('fruitMatchScores')) || [];
+        let scores = JSON.parse(localStorage.getItem('fruitScores')) || [];
         scores.push(newScore);
-        scores.sort((a, b) => a - b);
-        scores = scores.slice(0, 5);
-        localStorage.setItem('fruitMatchScores', JSON.stringify(scores));
+        
+        // Keep only last 5 games
+        if (scores.length > 5) scores.shift();
+        
+        localStorage.setItem('fruitScores', JSON.stringify(scores));
+    }
+
+    loadLeaderboard() {
+        // Using .slice().reverse() to show newest games first
+        const scores = JSON.parse(localStorage.getItem('fruitScores')) || [];
+        const list = document.getElementById('leaderboard-list');
+        
+        if(scores.length === 0) {
+            list.innerHTML = "<li>No games played yet</li>";
+        } else {
+            list.innerHTML = scores.slice().reverse().map(score => 
+                `<li><b>${score.diff}</b>: ${score.moves} Moves <span style="font-size:0.8rem; color:#888">(${score.date})</span></li>`
+            ).join('');
+        }
+    }
 }
 
-    loadLeaderboard(){
-        const scores = JSON.parse(localStorage.getItem('fruitMatchScores')) || [];
-        const list = document.getElementById('leaderboard-list');
-        if (scores.length > 0){
-            list.innerHTML = scores.map((score, index) => 
-                `<li><span>#${index + 1} Best</span> <span>${score} Moves</span></li>`
-            ).join('');
-        } 
-        else{
-            list.innerHTML = `<li>No harvest yet...</li>`;
-        }}}
 const game = new FruitGame();
