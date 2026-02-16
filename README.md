@@ -17,9 +17,3 @@ A responsive and interactive memory card game built using HTML, CSS, and JavaScr
 - **HTML** – Structural backbone  
 - **CSS** – Visual presentation 
 - **JavaScript** – Dynamic behavior  
-
----
-
-## 👤 Developer
-* **Name:** Ghulam Murtaza
-* **CMS ID:** 023-23-0079
